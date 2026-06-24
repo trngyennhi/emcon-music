@@ -430,12 +430,12 @@ option{background:#18181f}
       <label>Model</label>
       <select id="sc">
         <option value="full">★ Full Model (E+C+B)</option>
-        <option value="emo">Emotion Only</option>
-        <option value="ctx">Context Only</option>
-        <option value="beh">Behavior Only</option>
-        <option value="eb">Emotion + Behavior</option>
-        <option value="cb">Context + Behavior</option>
-        <option value="ec">Emotion + Context</option>
+        <option value="emotion_only">Emotion Only</option>
+        <option value="context_only">Context Only</option>
+        <option value="behavior_only">Behavior Only</option>
+        <option value="emotion_behavior">Emotion + Behavior</option>
+        <option value="context_behavior">Context + Behavior</option>
+        <option value="emotion_context">Emotion + Context</option>
       </select>
     </div>
     <div class="ctrl">
@@ -645,15 +645,18 @@ function ctxVec(w,t,a){
 }
 function fuse(ev,cv,bv,conf,cfg){
   const E=.5,C=.3,B=.2;
-  if(cfg==='emo') return ev;
-  if(cfg==='ctx') return cv;
-  if(cfg==='beh') return bv;
-  if(cfg==='eb'){let s=E+B;return ev.map((x,i)=>(E*x+B*bv[i])/s)}
-  if(cfg==='cb'){let s=C+B;return cv.map((x,i)=>(C*x+B*bv[i])/s)}
-  if(cfg==='ec'){let s=E+C;return ev.map((x,i)=>(E*x+C*cv[i])/s)}
-  // full
-  let ca=Math.max(.2,Math.min(1,conf));
-  let w1=E*ca,w2=C*(1+(1-ca)*.5),w3=B*(1+(1-ca)*.5),s=w1+w2+w3;
+  if(cfg==='emotion_only') return ev;
+  if(cfg==='context_only') return cv;
+  if(cfg==='behavior_only') return bv;
+  if(cfg==='emotion_behavior'){let s=E+B;return ev.map((x,i)=>(E*x+B*bv[i])/s)}
+  if(cfg==='context_behavior'){let s=C+B;return cv.map((x,i)=>(C*x+B*bv[i])/s)}
+  if(cfg==='emotion_context'){let s=E+C;return ev.map((x,i)=>(E*x+C*cv[i])/s)}
+  // full — confidence-adaptive nhưng LUÔN giữ Emotion > Context > Behavior
+  // Khi confidence thấp, dịch một phần nhỏ trọng số từ emotion sang context+behavior,
+  // nhưng có chặn để thứ tự ưu tiên w1>w2>w3 không bao giờ bị đảo.
+  let ca=Math.max(.4,Math.min(1,conf));   // sàn 0.4 để emotion vẫn trội
+  let shift=(1-ca)*.15;                    // tối đa dịch 0.09
+  let w1=E-shift, w2=C+shift*.6, w3=B+shift*.4, s=w1+w2+w3;
   return ev.map((x,i)=>(w1*x+w2*cv[i]+w3*bv[i])/s);
 }
 
@@ -832,7 +835,7 @@ function detectEmoFallback(txt){
 // ── adaptive update ──
 function adaptUpdate(prof,sv,sig){
   const a=.80;
-  if(sig==='like'||sig==='comp')
+  if(sig==='like'||sig==='complete')
     return prof.map((p,i)=>a*p+(1-a)*sv[i]);
   let opp=sv.map((x,i)=>Math.max(0,Math.min(1,2*prof[i]-x)));
   return prof.map((p,i)=>a*p+(1-a)*opp[i]);
@@ -865,6 +868,7 @@ async function run(){
 
   // Call Claude API for NLP
   const emo=await detectEmoNLP(txt);
+  if(!EMO_PROF[emo.lbl]) emo.lbl='Neutral';   // guard nhãn lạ từ API
   CUREMO=emo;
   const ev=EMO_PROF[emo.lbl];
   const cv=ctxVec(w,t,a);
@@ -923,15 +927,17 @@ function renderCtx(w,t,a){
 function renderFusion(emo,cfg,w,t,a){
   const E=.5,C=.3,B=.2;
   let segs=[];
-  if(cfg==='emo')  segs=[{n:'Emotion (E)',v:1,c:'#7c6bf8'}];
-  else if(cfg==='ctx')  segs=[{n:'Context (C)',v:1,c:'#22c55e'}];
-  else if(cfg==='beh')  segs=[{n:'Behavior (B)',v:1,c:'#f59e0b'}];
-  else if(cfg==='eb'){let s=E+B;segs=[{n:'Emotion',v:E/s,c:'#7c6bf8'},{n:'Behavior',v:B/s,c:'#f59e0b'}]}
-  else if(cfg==='cb'){let s=C+B;segs=[{n:'Context',v:C/s,c:'#22c55e'},{n:'Behavior',v:B/s,c:'#f59e0b'}]}
-  else if(cfg==='ec'){let s=E+C;segs=[{n:'Emotion',v:E/s,c:'#7c6bf8'},{n:'Context',v:C/s,c:'#22c55e'}]}
+  if(cfg==='emotion_only')  segs=[{n:'Emotion (E)',v:1,c:'#7c6bf8'}];
+  else if(cfg==='context_only')  segs=[{n:'Context (C)',v:1,c:'#22c55e'}];
+  else if(cfg==='behavior_only')  segs=[{n:'Behavior (B)',v:1,c:'#f59e0b'}];
+  else if(cfg==='emotion_behavior'){let s=E+B;segs=[{n:'Emotion',v:E/s,c:'#7c6bf8'},{n:'Behavior',v:B/s,c:'#f59e0b'}]}
+  else if(cfg==='context_behavior'){let s=C+B;segs=[{n:'Context',v:C/s,c:'#22c55e'},{n:'Behavior',v:B/s,c:'#f59e0b'}]}
+  else if(cfg==='emotion_context'){let s=E+C;segs=[{n:'Emotion',v:E/s,c:'#7c6bf8'},{n:'Context',v:C/s,c:'#22c55e'}]}
   else{
-    let ca=Math.max(.2,Math.min(1,emo.conf));
-    let w1=E*ca,w2=C*(1+(1-ca)*.5),w3=B*(1+(1-ca)*.5),s=w1+w2+w3;
+    // Full model — dùng cùng công thức với fuse() (confidence-adaptive, E>C>B luôn đúng)
+    let ca=Math.max(.4,Math.min(1,emo.conf));
+    let shift=(1-ca)*.15;
+    let w1=E-shift,w2=C+shift*.6,w3=B+shift*.4,s=w1+w2+w3;
     segs=[{n:'Emotion',v:w1/s,c:'#7c6bf8'},{n:'Context',v:w2/s,c:'#22c55e'},{n:'Behavior',v:w3/s,c:'#f59e0b'}];
   }
   document.getElementById('fus-card').innerHTML=`
@@ -987,7 +993,7 @@ function renderTracks(recs,emo,w,t,a,cfg){
           </div>
           <div class="track-btns">
             <button class="act like" id="btn-like-${s.id}" onclick="event.stopPropagation();sig(${s.id},'like')">👍 Like</button>
-            <button class="act comp" id="btn-comp-${s.id}" onclick="event.stopPropagation();sig(${s.id},'comp')">✅ Complete</button>
+            <button class="act comp" id="btn-complete-${s.id}" onclick="event.stopPropagation();sig(${s.id},'complete')">✅ Complete</button>
             <button class="act skip" id="btn-skip-${s.id}" onclick="event.stopPropagation();sig(${s.id},'skip')">⏭ Skip</button>
           </div>
         </div>
@@ -1011,9 +1017,11 @@ function sig(songId,signal){
   const w=val('sw'),t=val('st'),a=val('sa');
 
   // adaptive update
+  const cfg=val('sc')||'full';
+  const profBefore=[...PROF];           // chụp profile TRƯỚC khi update
   PROF=adaptUpdate(PROF,s.v,signal);
 
-  // log — lưu thêm conf và recScore để xuất CSV đầy đủ
+  // log — lưu thêm conf, recScore, cfg, timestamp thật để xuất CSV đầy đủ
   const now=new Date();
   const scoreEl=document.querySelector(`#tr${s.id} .track-score`);
   const recScore=scoreEl?parseFloat(scoreEl.textContent)||null:null;
@@ -1023,8 +1031,11 @@ function sig(songId,signal){
     signal,emotion:emo.lbl,
     conf:emo.conf||null,
     ctx:`${w}/${t}/${a}`,
+    cfg,
     recScore,
     time:now.toLocaleTimeString('vi-VN'),
+    ts:now.toISOString(),
+    profileBefore:profBefore,
     profileSnap:[...PROF],
   });
 
@@ -1033,7 +1044,7 @@ function sig(songId,signal){
     participant_id: PARTICIPANT?.id||'',
     session_id: PARTICIPANT?.session||'',
     phase:'demo',
-    model_mode:val('sc')||'full',
+    model_mode:cfg,
     predicted_emotion:emo.lbl,
     emotion_confidence:(emo.conf||0).toFixed(4),
     weather:w, time_context:t, activity:a,
@@ -1044,14 +1055,14 @@ function sig(songId,signal){
     track_vector_danceability:s.v[3].toFixed(3),
     track_vector_acousticness:s.v[4].toFixed(3),
     rank:'', recommendation_score:recScore!=null?recScore.toFixed(4):'',
-    action:signal,
-    user_profile_before:PROF.map(x=>x.toFixed(3)).join('|'),
-    user_profile_after:[...PROF].map(x=>x.toFixed(3)).join('|'),
+    signal:signal, action:signal,
+    user_profile_before:profBefore.map(x=>x.toFixed(3)).join('|'),
+    user_profile_after:PROF.map(x=>x.toFixed(3)).join('|'),
     explanation_emotion_pct:'',explanation_context_pct:'',explanation_behavior_pct:''
   });
 
   // disable all buttons for this track, mark the clicked one
-  ['like','comp','skip'].forEach(sg=>{
+  ['like','complete','skip'].forEach(sg=>{
     const btn=document.getElementById(`btn-${sg}-${songId}`);
     if(btn){btn.disabled=true;btn.classList.toggle('done',sg===signal)}
   });
@@ -1086,8 +1097,8 @@ function resetProf(){
 // ── history feed ──
 function addHist(h){
   const feed=document.getElementById('hist-feed');
-  const sigLabel={like:'👍 Like',comp:'✅ Complete',skip:'⏭ Skip'};
-  const sigCls={like:'like',comp:'comp',skip:'skip'};
+  const sigLabel={like:'👍 Like',complete:'✅ Complete',skip:'⏭ Skip'};
+  const sigCls={like:'like',complete:'comp',skip:'skip'};
   const el=document.createElement('div');
   el.className='hist-item';
   el.innerHTML=`
@@ -1108,7 +1119,7 @@ function updateBehPage(){
   const n=INTS.length;
   document.getElementById('st-total').textContent=n;
   document.getElementById('st-like').textContent=INTS.filter(x=>x.signal==='like').length;
-  document.getElementById('st-comp').textContent=INTS.filter(x=>x.signal==='comp').length;
+  document.getElementById('st-comp').textContent=INTS.filter(x=>x.signal==='complete').length;
   document.getElementById('st-skip').textContent=INTS.filter(x=>x.signal==='skip').length;
   renderProfile();
 
@@ -1118,8 +1129,8 @@ function updateBehPage(){
   if(!n){empty.style.display='block';table.style.display='none';return}
   empty.style.display='none';table.style.display='table';
   const moodFull={h:'happy',s:'sad',c:'chill',f:'focus'};
-  const sigLbl={like:'👍 Like',comp:'✅ Complete',skip:'⏭ Skip'};
-  const sigCls={like:'sig-like',comp:'sig-comp',skip:'sig-skip'};
+  const sigLbl={like:'👍 Like',complete:'✅ Complete',skip:'⏭ Skip'};
+  const sigCls={like:'sig-like',complete:'sig-comp',skip:'sig-skip'};
   tbody.innerHTML=[...INTS].reverse().map(x=>`
     <tr>
       <td class="mono" style="color:var(--tx3)">${x.idx}</td>
@@ -1137,8 +1148,8 @@ function updateBehPage(){
 function exportCSV(){
   if(!INTS.length){toast('⚠️ No interactions recorded yet');return}
   const moodFull={h:'happy',s:'sad',c:'chill',f:'focus'};
-  const sigScore={like:1,comp:1,skip:-1};
-  const sigLabel={like:'Like',comp:'Complete',skip:'Skip'};
+  const sigScore={like:1,complete:1,skip:-1};
+  const sigLabel={like:'Like',complete:'Complete',skip:'Skip'};
   const header=[
     'idx','session_id','user_id','timestamp',
     'track_name','artist','song_mood',
@@ -1154,11 +1165,9 @@ function exportCSV(){
     const w=ctx[0]||'',t=ctx[1]||'',a=ctx[2]||'';
     const conf=x.conf!=null?Math.round(x.conf*100):'';
     const snap=x.profileSnap||[0.5,0.5,0.5,0.5,0.4];
-    const sid=`S${String(Math.floor(i/10)+1).padStart(2,'0')}`;
-    const uid=`U01`;
-    const now=new Date();
-    const ts=new Date(now.getTime()-(INTS.length-i)*3*60000)
-              .toISOString().replace('T',' ').slice(0,19);
+    const sid=PARTICIPANT?.session||'';            // session thật
+    const uid=PARTICIPANT?.id||'';                 // user thật
+    const ts=x.ts?x.ts.replace('T',' ').slice(0,19):''; // timestamp thật lúc tương tác
     return [
       x.idx, sid, uid, ts,
       `"${x.name.replace(/"/g,'""')}"`,
@@ -1167,7 +1176,7 @@ function exportCSV(){
       x.signal, sigLabel[x.signal], sigScore[x.signal],
       x.emotion, conf,
       w, t, a, `"${x.ctx}"`,
-      'full', x.recScore!=null?x.recScore.toFixed(4):'',
+      x.cfg||'full', x.recScore!=null?x.recScore.toFixed(4):'',
       snap[0].toFixed(3),snap[1].toFixed(3),snap[2].toFixed(3),snap[3].toFixed(3),snap[4].toFixed(3)
     ].join(',');
   }).join('\n');
@@ -1219,7 +1228,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZoyaumU3DX98nhnaLtau04rqjWGH4AbSEdra0yNysmILnHQtu102SWQEO1FSj6Qxe/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwjb8U9EUgZFaFwKkkwCev5_SWIh5NfQZdp45hLEsv-6Xavh4W3IR2-27X1E3iB1SnLmQ/exec';
 
 async function syncToServer(endpoint, data){
   if(!SHEETS_URL) return;
@@ -1323,7 +1332,7 @@ function pickPref(p){ satPref=p; }  // kept for CSV compat
 
 // Đếm tương tác theo phase từ INTS
 function phaseCounts(){
-  const c={baseline:{like:0,skip:0,comp:0},full:{like:0,skip:0,comp:0}};
+  const c={baseline:{like:0,skip:0,complete:0},full:{like:0,skip:0,complete:0}};
   INTS.forEach(x=>{
     const ph=(x.cfg==='full')?'full':'baseline';
     if(c[ph]&&c[ph][x.signal]!=null)c[ph][x.signal]++;
@@ -1373,10 +1382,10 @@ function submitSat(){
     full_satisfaction: last.F.satisfaction||'',
     total_likes_baseline: last_pc.baseline.like,
     total_skips_baseline: last_pc.baseline.skip,
-    total_completes_baseline: last_pc.baseline.comp,
+    total_completes_baseline: last_pc.baseline.complete,
     total_likes_full: last_pc.full.like,
     total_skips_full: last_pc.full.skip,
-    total_completes_full: last_pc.full.comp,
+    total_completes_full: last_pc.full.complete,
   });
   syncToServer('/log/json', {
     exported_at:new Date().toISOString(),
@@ -1396,7 +1405,7 @@ function addSim(){
     pid:`SIM${String(SAT_DATA.filter(d=>d.sim).length+1).padStart(2,'0')}`,
     age:'23–27',gender:'',freq:'often',genres:'',session:'SIM',
     B,F,pref:fm>=bm?'full':'baseline',feedback:'(simulated)',
-    counts:{baseline:{like:rand(1,3),skip:rand(1,4),comp:rand(1,3)},full:{like:rand(3,6),skip:rand(0,2),comp:rand(2,5)}},
+    counts:{baseline:{like:rand(1,3),skip:rand(1,4),complete:rand(1,3)},full:{like:rand(3,6),skip:rand(0,2),complete:rand(2,5)}},
     time:new Date().toISOString(),sim:true,
   });
   renderSatResults();
@@ -1458,7 +1467,7 @@ function exportSatCSV(){
       d.B.relevance||'',d.B.diversity||'',d.B.emotion_match||'',d.B.satisfaction||'',
       d.F.relevance||'',d.F.diversity||'',d.F.emotion_match||'',d.F.satisfaction||'',
       d.pref, `"${(d.feedback||'').replace(/"/g,'""')}"`,
-      cb.like,cb.skip,cb.comp, cf.like,cf.skip,cf.comp
+      cb.like,cb.skip,cb.complete, cf.like,cf.skip,cf.complete
     ].join(',');
   }).join('\n');
 
