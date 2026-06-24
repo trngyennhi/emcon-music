@@ -1219,20 +1219,20 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz9j7E9YXuzdpiYynaxPoBIem-rONEgpEdGWZToFfPhAT0pE1T0LEI7Fgw4jNPGFYND/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZoyaumU3DX98nhnaLtau04rqjWGH4AbSEdra0yNysmILnHQtu102SWQEO1FSj6Qxe/exec';
 
 async function syncToServer(endpoint, data){
   if(!SHEETS_URL) return;
-  // Gửi dữ liệu lên Google Sheets qua Apps Script
   const payload = { sheet: endpoint.replace('/log/',''), ...data };
   try{
+    // text/plain tránh CORS preflight bị block khi chạy local
     await fetch(SHEETS_URL, {
       method:'POST',
-      mode:'no-cors',  // Google Apps Script cần no-cors
-      headers:{'Content-Type':'application/json'},
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify(payload)
     });
-  }catch(e){ console.warn('Sheets sync failed (offline mode ok):', e.message); }
+  }catch(e){ console.warn('Sheets sync failed:', e.message); }
 }
 
 // Set URL từ console: setServerURL('https://script.google.com/...')
