@@ -1026,13 +1026,15 @@ function sig(songId,signal){
     phase:'demo',
     model_mode:val('sc')||'full',
     predicted_emotion:emo.lbl,
-    emotion_confidence:emo.conf||'',
-    weather:w,time_context:t,activity:a,
+    emotion_confidence:(emo.conf||0).toFixed(4),
+    weather:w, time_context:t, activity:a,
     track_id:songId, track_name:s.n, artist:s.ar, track_mood:s.m,
-    track_vector_valence:s.v[0],track_vector_energy:s.v[1],
-    track_vector_tempo:s.v[2],track_vector_danceability:s.v[3],
-    track_vector_acousticness:s.v[4],
-    rank:'', recommendation_score:recScore||'',
+    track_vector_valence:s.v[0].toFixed(3),
+    track_vector_energy:s.v[1].toFixed(3),
+    track_vector_tempo:s.v[2].toFixed(3),
+    track_vector_danceability:s.v[3].toFixed(3),
+    track_vector_acousticness:s.v[4].toFixed(3),
+    rank:'', recommendation_score:recScore!=null?recScore.toFixed(4):'',
     action:signal,
     user_profile_before:PROF.map(x=>x.toFixed(3)).join('|'),
     user_profile_after:[...PROF].map(x=>x.toFixed(3)).join('|'),
@@ -1208,7 +1210,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycby9TT0RPIp9OxiaAy0MAJOAmq0yiUE13OqXmxF18CwPpc66aXNhV2o3MomYC-1mDUkZ/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzWJRnKRPPLuazBNXKCTmQNJfv_Jqw9dLkmTGtFbAv7IxpUzTYDdKiNeyOaP9Ryz-EK/exec';
 
 async function syncToServer(endpoint, data){
   if(!SHEETS_URL) return;
@@ -1332,9 +1334,34 @@ function submitSat(){
   renderSatResults();
   toast(`✅ Rating submitted for ${PARTICIPANT.id}`);
 
-  // Sync lên Colab server
+  // Sync lên Google Sheets — flatten đúng column names
   const last = SAT_DATA[SAT_DATA.length-1];
-  syncToServer('/log/survey', last);
+  const pc = last.counts;
+  syncToServer('/log/survey', {
+    timestamp: last.time,
+    participant_id: last.pid,
+    session_id: last.session,
+    age_group: last.age,
+    gender_optional: last.gender,
+    music_frequency: last.freq,
+    preferred_genres_optional: last.genres,
+    baseline_relevance: last.B.relevance||'',
+    baseline_diversity: last.B.diversity||'',
+    baseline_emotion_match: last.B.emotion_match||'',
+    baseline_satisfaction: last.B.satisfaction||'',
+    full_relevance: last.F.relevance||'',
+    full_diversity: last.F.diversity||'',
+    full_emotion_match: last.F.emotion_match||'',
+    full_satisfaction: last.F.satisfaction||'',
+    preferred_model: '',
+    feedback_text: '',
+    total_likes_baseline: pc.baseline.like,
+    total_skips_baseline: pc.baseline.skip,
+    total_completes_baseline: pc.baseline.comp,
+    total_likes_full: pc.full.like,
+    total_skips_full: pc.full.skip,
+    total_completes_full: pc.full.comp,
+  });
   syncToServer('/log/json', {
     exported_at:new Date().toISOString(),
     participant:PARTICIPANT,
