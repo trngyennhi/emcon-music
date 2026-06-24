@@ -288,15 +288,16 @@ option{background:#18181f}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:2px}
 /* ─── Likert ─── */
-.sat-card{background:var(--surf2);border-radius:var(--r);padding:10px 12px}
-.sat-card .sat-q{font-size:11px;font-weight:600;color:var(--tx);margin-bottom:4px}
-.sat-card .sat-desc{font-size:10px;color:var(--tx3);margin-bottom:9px;line-height:1.5}
-.lk-row{display:flex;gap:5px}
-.lk{flex:1;padding:6px 0;border:1px solid var(--bdr2);border-radius:6px;background:transparent;
-     color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;text-align:center;font-family:Inter,sans-serif;transition:.15s}
+.sat-card{background:var(--surf2);border-radius:var(--r);padding:12px 14px}
+.sat-card .sat-q{font-size:12px;font-weight:600;color:var(--tx);margin-bottom:3px}
+.sat-card .sat-desc{font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.5}
+.lk-row{display:flex;gap:6px}
+.lk{flex:1;padding:10px 0;border:1px solid var(--bdr2);border-radius:8px;background:transparent;
+     color:var(--tx2);font-size:15px;font-weight:600;cursor:pointer;text-align:center;
+     font-family:Inter,sans-serif;transition:.15s;min-height:44px}
 .lk:hover{border-color:var(--pu);color:var(--pu2)}
 .lk.on{background:var(--puglow);border-color:var(--pu);color:var(--pu2);font-weight:700}
-.lk-hint{display:flex;justify-content:space-between;font-size:9px;color:var(--tx3);margin-top:3px;padding:0 1px}
+.lk-hint{display:flex;justify-content:space-between;font-size:9px;color:var(--tx3);margin-top:5px;padding:0 1px}
 /* ─── Sat compare ─── */
 .sc-row{display:grid;grid-template-columns:110px 1fr 40px 1fr 40px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--bdr)}
 .sc-row:last-child{border-bottom:none}
@@ -520,71 +521,55 @@ option{background:#18181f}
 
   <!-- USER SATISFACTION PAGE -->
   <div class="page" id="pg-sat">
+
+    <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div>
-        <div style="font-size:14px;font-weight:600;color:var(--tx)">User Satisfaction Survey (Likert 1–5)</div>
-        <div style="font-size:11px;color:var(--tx2);margin-top:3px">Compare Baseline (Behavior Only) vs Full Model (Emotion + Context + Behavior)</div>
-      </div>
-      <button class="btn" style="width:auto;padding:6px 14px;font-size:12px" onclick="submitSat()">✓ Submit Rating</button>
+      <div style="font-size:14px;font-weight:600;color:var(--tx)">User Satisfaction Survey</div>
+      <button class="btn" style="width:auto;padding:8px 18px;font-size:13px" onclick="submitSat()">✓ Submit</button>
     </div>
 
-    <!-- Notice -->
-    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:9px;padding:10px 13px;font-size:11px;color:var(--tx2);line-height:1.5">
-    </div>
-
-    <!-- Participant info (auto-filled from gate) -->
-    <div class="card" style="display:flex;align-items:center;gap:12px;font-size:12px;color:var(--tx2)">
-      <span style="width:9px;height:9px;border-radius:50%;background:#22c55e;flex-shrink:0"></span>
+    <!-- Participant badge -->
+    <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--tx2)">
+      <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0"></span>
       <span>Participant: <strong id="sv-pp" style="color:var(--tx)">—</strong></span>
       <span style="color:var(--tx3)">·</span>
-      <span>Session: <span id="sv-sess" class="mono" style="color:var(--tx3)">—</span></span>
+      <span id="sv-sess" class="mono" style="color:var(--tx3);font-size:10px">—</span>
     </div>
 
     <!-- Baseline -->
     <div class="card">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px">
-        <div style="width:7px;height:7px;border-radius:50%;background:#94a3b8"></div>
-        <span style="font-size:12px;font-weight:600;color:var(--tx)">Baseline — Behavior Only</span>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px">
+        <div style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0"></div>
+        <span style="font-size:13px;font-weight:600;color:var(--tx)">System A — Baseline</span>
       </div>
-      <div id="sat-baseline" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      <div id="sat-baseline" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
     </div>
 
     <!-- Full Model -->
     <div class="card">
-      <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px">
-        <div style="width:7px;height:7px;border-radius:50%;background:var(--pu)"></div>
-        <span style="font-size:12px;font-weight:600;color:var(--tx)">Full Model — Emotion + Context + Behavior</span>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--pu);flex-shrink:0"></div>
+        <span style="font-size:13px;font-weight:600;color:var(--tx)">System B — Full Model</span>
       </div>
-      <div id="sat-full" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      <div id="sat-full" style="display:grid;grid-template-columns:1fr;gap:12px"></div>
     </div>
 
-    <!-- Aggregated Results -->
+    <!-- Aggregated Results (researcher view) -->
     <div class="card" id="sat-results">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <span style="font-size:13px;font-weight:600">Aggregated Results</span>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:22px;font-weight:700;color:var(--pu2);font-family:'DM Mono',monospace" id="sat-n">0</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;font-weight:600">Results</span>
+          <span style="font-size:18px;font-weight:700;color:var(--pu2);font-family:'DM Mono',monospace" id="sat-n">0</span>
           <span style="font-size:11px;color:var(--tx2)">participants</span>
+        </div>
+        <div style="display:flex;gap:6px">
           <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportSatCSV()">⬇ CSV</button>
           <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportJSON()">⬇ JSON</button>
         </div>
       </div>
       <div id="sat-compare"></div>
-      <div style="font-size:10px;color:var(--tx3);margin-top:10px">💾 Data stored locally in this browser session</div>
     </div>
 
-    <!-- Admin tools (collapsed) -->
-    <details style="margin-top:4px">
-      <summary style="font-size:11px;color:var(--tx3);cursor:pointer;padding:6px 0">⚙️ Admin / Testing Tools</summary>
-      <div class="card" style="margin-top:6px;display:flex;flex-direction:column;gap:9px">
-        <div style="font-size:10px;color:var(--tx3);line-height:1.5">Simulation tools are for testing only. They do not generate real study data.</div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap">
-          <button class="btn-sm" style="width:auto;padding:6px 12px" onclick="addSim()">＋ Add Simulated User</button>
-          <button class="btn-sm" style="width:auto;padding:6px 12px" onclick="clearParticipant()">🗑 Clear Participant</button>
-          <button class="btn-sm" style="width:auto;padding:6px 12px;color:#f87171;border-color:rgba(248,113,113,.4)" onclick="resetAll()">⚠ Reset All</button>
-        </div>
-      </div>
-    </details>
   </div>
 
 </div><!-- /mid -->
@@ -1395,7 +1380,7 @@ function resetAll(){
 function renderSatResults(){
   const n=SAT_DATA.length;
   document.getElementById('sat-n').textContent=n;
-  if(!n){document.getElementById('sat-compare').innerHTML='<div style="font-size:11px;color:var(--tx3);padding:8px 0">No survey data yet. Submit a rating first. có dữ liệu. Hãy nộp đánh giá đầu tiên.</div>';return}
+  if(!n){document.getElementById('sat-compare').innerHTML='<div style="font-size:11px;color:var(--tx3);padding:8px 0">No ratings submitted yet.</div>';return}
   document.getElementById('sat-compare').innerHTML=SAT_CRITERIA.map(c=>{
     const bm=(SAT_DATA.reduce((s,d)=>s+(d.B[c.key]||3),0)/n).toFixed(2);
     const fm=(SAT_DATA.reduce((s,d)=>s+(d.F[c.key]||3),0)/n).toFixed(2);
