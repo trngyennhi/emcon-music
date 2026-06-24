@@ -1210,7 +1210,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzWJRnKRPPLuazBNXKCTmQNJfv_Jqw9dLkmTGtFbAv7IxpUzTYDdKiNeyOaP9Ryz-EK/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz6Z8gtIN3SrjxIYhE74SQ_XxpP-vZu11QMaiQyfLFrYr2Ra9etrG4S91epqVR03k5w/exec';
 
 async function syncToServer(endpoint, data){
   if(!SHEETS_URL) return;
@@ -1342,9 +1342,9 @@ function submitSat(){
     participant_id: last.pid,
     session_id: last.session,
     age_group: last.age,
-    gender_optional: last.gender,
+    gender: last.gender,
     music_frequency: last.freq,
-    preferred_genres_optional: last.genres,
+    preferred_genres: last.genres,
     baseline_relevance: last.B.relevance||'',
     baseline_diversity: last.B.diversity||'',
     baseline_emotion_match: last.B.emotion_match||'',
@@ -1353,8 +1353,6 @@ function submitSat(){
     full_diversity: last.F.diversity||'',
     full_emotion_match: last.F.emotion_match||'',
     full_satisfaction: last.F.satisfaction||'',
-    preferred_model: '',
-    feedback_text: '',
     total_likes_baseline: pc.baseline.like,
     total_skips_baseline: pc.baseline.skip,
     total_completes_baseline: pc.baseline.comp,
