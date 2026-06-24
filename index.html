@@ -16,7 +16,7 @@
   --r:8px;--r2:12px;--r3:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.55;height:100vh;overflow:hidden;position:relative}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.55;height:100vh;overflow:hidden}
 
 /* ─── Shell ─── */
 .shell{display:grid;grid-template-columns:252px 1fr 288px;grid-template-rows:52px 1fr;height:100vh}
@@ -329,52 +329,6 @@ option{background:#18181f}
   </div>
 </div>
 
-<!-- PARTICIPANT GATE MODAL — outside shell so it's never clipped -->
-<div id="pp-gate" style="position:fixed;inset:0;background:rgba(8,8,14,.88);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto">
-  <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;max-width:420px;width:100%;padding:24px;margin:auto">
-    <div style="font-size:17px;font-weight:700;color:var(--tx);margin-bottom:4px">🎵 Join User Study</div>
-    <div style="font-size:12px;color:var(--tx2);margin-bottom:20px;line-height:1.6">Please provide your information to begin.</div>
-
-    <div style="display:flex;flex-direction:column;gap:13px">
-      <div>
-        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Participant ID <span style="color:#f87171">*</span></label>
-        <input id="pp-id" type="text" placeholder="e.g. P001 or your name" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div>
-          <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Age Group</label>
-          <select id="pp-age" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
-            <option>18–22</option><option>23–27</option><option>28–35</option><option>36+</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Gender</label>
-          <select id="pp-gender" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
-            <option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Other</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Music Listening Frequency</label>
-        <select id="pp-freq" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
-          <option value="daily">Daily</option><option value="often">Often</option>
-          <option value="sometimes">Sometimes</option><option value="rarely">Rarely</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Preferred Genres <span style="color:var(--tx3)">(optional)</span></label>
-        <input id="pp-genres" type="text" placeholder="e.g. pop, ballad, lofi, rap..." style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
-      </div>
-      <label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer;font-size:11.5px;color:var(--tx2);line-height:1.5;margin-top:2px">
-        <input id="pp-consent" type="checkbox" style="margin-top:3px;accent-color:var(--pu);width:18px;height:18px;flex-shrink:0;cursor:pointer">
-        <span>I agree to participate in this study and allow my anonymized data to be used for research purposes.</span>
-      </label>
-    </div>
-
-    <button onclick="startStudy()" style="width:100%;margin-top:20px;padding:14px;border:none;border-radius:10px;background:var(--pu);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;touch-action:manipulation">Start Study →</button>
-    <div style="font-size:10px;color:var(--tx3);text-align:center;margin-top:10px">🔒 Your data is anonymized and used for research only.</div>
-  </div>
-</div>
 <div class="left">
   <div>
     <div class="lbl">User Emotion Input</div>
@@ -448,7 +402,7 @@ option{background:#18181f}
     </div>
   </div>
 
-  <button class="btn" onclick="run()">▶ Recommend</button>
+  <button class="btn" id="btn-run" onclick="run()">▶ Recommend</button>
   <button class="btn-sm" onclick="resetProf()">↺ Reset User Profile</button>
 </div>
 
@@ -843,6 +797,7 @@ function adaptUpdate(prof,sv,sig){
 
 // ── main recommend (async — gọi Claude API cho NLP) ──
 async function run(){
+  if(!PARTICIPANT){toast('⚠️ Please complete participant registration first (Start Study)');return}
   const txt=document.getElementById('txt').value.trim();
   if(!txt){toast('⚠️ Please enter your emotion');return}
   const w=val('sw'),t=val('st'),a=val('sa'),cfg=val('sc'),k=+val('sk');
@@ -1011,6 +966,7 @@ function togTrack(id){
 
 // ── record behavior signal ──
 function sig(songId,signal){
+  if(!PARTICIPANT){toast('⚠️ Please start the study first');return}
   const s=DB.find(x=>x.id===songId);
   if(!s)return;
   const emo=CUREMO||{lbl:'Neutral',conf:.5};
@@ -1228,7 +1184,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwfz9_zAukbak68qUUWRAKVwGABQqKYfjv_qbRNT_twDY5UU-2LSTeg41J7bPHZn_pakw/exec;
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbym-QY9xtwc6-4aG6peEQgtgJj7pr64t-A3CCmp7I4jSlnF7hK2o8ekbA1q0Ltd6wffkA/exec';
 
 async function syncToServer(endpoint, data){
   if(!SHEETS_URL) return;
@@ -1288,6 +1244,10 @@ function startStudy(){
   // Fill survey page
   document.getElementById('sv-pp').textContent=`${id} (${PARTICIPANT.age})`;
   document.getElementById('sv-sess').textContent=PARTICIPANT.session;
+  // Enable recommendation UI
+  document.getElementById('btn-run').disabled = false;
+  document.getElementById('btn-run').style.opacity = '';
+  document.getElementById('btn-run').title = '';
   toast(`✅ Welcome ${id}! Study has started`);
 }
 
@@ -1508,6 +1468,62 @@ function dl(name,content,type){
 renderProfile();
 buildSatForms();
 autoCtx();
+// Disable recommend button until participant starts study
+(function(){
+  const btn = document.getElementById('btn-run');
+  if(btn){
+    btn.disabled = true;
+    btn.style.opacity = '0.45';
+    btn.title = 'Please start the study first (click Start Study)';
+  }
+})();
 </script>
+
+<!-- PARTICIPANT GATE MODAL — direct child of body, never clipped by shell/grid -->
+<div id="pp-gate" style="position:fixed;inset:0;background:rgba(8,8,14,.88);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;max-width:420px;width:100%;padding:24px;margin:auto">
+    <div style="font-size:17px;font-weight:700;color:var(--tx);margin-bottom:4px">🎵 Join User Study</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:20px;line-height:1.6">Please provide your information to begin.</div>
+
+    <div style="display:flex;flex-direction:column;gap:13px">
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Participant ID <span style="color:#f87171">*</span></label>
+        <input id="pp-id" type="text" placeholder="e.g. P001 or your name" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Age Group</label>
+          <select id="pp-age" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
+            <option>18–22</option><option>23–27</option><option>28–35</option><option>36+</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Gender</label>
+          <select id="pp-gender" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
+            <option value="">Prefer not to say</option><option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Music Listening Frequency</label>
+        <select id="pp-freq" style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
+          <option value="daily">Daily</option><option value="often">Often</option>
+          <option value="sometimes">Sometimes</option><option value="rarely">Rarely</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:5px">Preferred Genres <span style="color:var(--tx3)">(optional)</span></label>
+        <input id="pp-genres" type="text" placeholder="e.g. pop, ballad, lofi, rap..." style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--tx);font-family:Inter,sans-serif;font-size:13px;padding:9px 11px;outline:none;box-sizing:border-box">
+      </div>
+      <label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer;font-size:11.5px;color:var(--tx2);line-height:1.5;margin-top:2px">
+        <input id="pp-consent" type="checkbox" style="margin-top:3px;accent-color:var(--pu);width:18px;height:18px;flex-shrink:0;cursor:pointer">
+        <span>I agree to participate in this study and allow my anonymized data to be used for research purposes.</span>
+      </label>
+    </div>
+
+    <button onclick="startStudy()" style="width:100%;margin-top:20px;padding:14px;border:none;border-radius:10px;background:var(--pu);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;touch-action:manipulation">Start Study →</button>
+    <div style="font-size:10px;color:var(--tx3);text-align:center;margin-top:10px">🔒 Your data is anonymized and used for research only.</div>
+  </div>
+</div>
 </body>
 </html>
