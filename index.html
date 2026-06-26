@@ -220,6 +220,30 @@ option{background:#18181f}
     overflow: visible !important;
   }
 
+  /* Ẩn btn-run trong left panel — sticky bar thay thế */
+  #btn-run { display: none !important; }
+
+
+  /* ── Layout: body scroll tự nhiên ── */
+  html, body {
+    height: auto !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  .shell {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+  }
+  /* Override desktop panel heights */
+  .left, .mid, .right {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   /* ── Topbar ── */
   .topbar {
     position: sticky;
@@ -529,28 +553,26 @@ button.lk:active                { transform: scale(0.95); }
 
 /* ── Native dialog modal ────────────────────────────────────── */
 dialog#pp-gate {
+  /* Kích thước và vị trí */
+  max-width: 480px;
+  width: calc(100vw - 32px);
+  max-height: 92vh;
+  /* Reset browser defaults */
   border: none;
   padding: 0;
   background: transparent;
-  max-width: 480px;
-  width: calc(100vw - 32px);
-  border-radius: 16px;
   outline: none;
-  overflow-y: auto;
-  max-height: 90vh;
-  /* Căn giữa — hoạt động trên mọi browser */
+  overflow: visible; /* inner div tự scroll */
+  /* Căn giữa */
   margin: auto;
-  -webkit-overflow-scrolling: touch;
 }
 dialog#pp-gate::backdrop {
   background: rgba(8, 8, 14, 0.92);
 }
-/* Mobile: full width gần hết màn hình */
 @media (max-width: 768px) {
   dialog#pp-gate {
-    width: calc(100vw - 24px);
-    max-height: 85vh;
-    margin: auto;
+    width: calc(100vw - 20px);
+    max-height: 90vh;
   }
 }
 
@@ -1160,6 +1182,8 @@ async function run(){
   document.getElementById('empty-rec').style.display='none';
   const ro=document.getElementById('rec-out');
   ro.classList.remove('rec-out-hidden');
+  // Cuộn lên đầu để user thấy kết quả
+  window.scrollTo({top:0, behavior:'smooth'});
   document.getElementById('go-survey-cta').style.display='block';
   document.getElementById('emo-card').innerHTML=`
     <div class="card" style="display:flex;align-items:center;gap:12px;padding:16px">
@@ -1504,6 +1528,8 @@ function goTab(tab){
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',tabs[i]===tab));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.getElementById('pg-'+tab).classList.add('on');
+  // Cuộn lên đầu trang khi chuyển tab (quan trọng trên mobile)
+  window.scrollTo({top:0, behavior:'smooth'});
   if(tab==='beh')updateBehPage();
   if(tab==='sat')renderSatResults();
 }
@@ -1536,7 +1562,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwQ1jYPgmqlvRlr6XZHdc2NCNXEdpGP0kG4kpiKfGhr7XHZB15FXyfuXZhHXbNtPK8T/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyM9uFu_GmkyP9-fUA6oR_YNCxeKA3g24vlmw2YqHoVnxhCPJx4n1n1Ma_5zGFsmlkF/exec';
 
 // ── Sync status dot ──
 function syncDot(state){
@@ -1926,17 +1952,18 @@ window.addEventListener('DOMContentLoaded', function(){
     btn.style.opacity = '0.45';
     btn.title = 'Please start the study first (click Start Study)';
   }
+  // Cũng disable sticky bar button
+  const sticky = document.getElementById('btn-sticky');
+  if(sticky){ sticky.disabled = true; }
 })();
 </script>
 
 <!-- PARTICIPANT GATE MODAL — native dialog, works on all devices -->
-<dialog id="pp-gate" style="
-  border:none; padding:0; background:transparent;
-  max-width:460px; width:calc(100% - 32px);
-  border-radius:16px; overflow:visible;
-">
+<dialog id="pp-gate">
   <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;
-              padding:24px;width:100%;box-sizing:border-box;">
+              padding:24px;width:100%;box-sizing:border-box;
+              overflow-y:auto;-webkit-overflow-scrolling:touch;
+              max-height:88vh;">
     <!-- Project intro compact -->
     <div style="text-align:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bdr)">
       <div style="font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px">🎵 EMCON-Music</div>
