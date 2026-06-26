@@ -220,8 +220,8 @@ option{background:#18181f}
     overflow: visible !important;
   }
 
-  /* Ẩn btn-run trong left panel — sticky bar thay thế */
-  #btn-run { display: none !important; }
+  /* Ẩn desktop-only elements trên mobile — sticky bar thay thế */
+  .desktop-only { display: none !important; }
 
 
   /* ── Layout: body scroll tự nhiên ── */
@@ -347,6 +347,8 @@ option{background:#18181f}
 .sc-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--tx2);text-align:right}
 
 @media (min-width: 769px) {
+  /* Show desktop-only elements on desktop */
+  .desktop-only { display: block !important; }
 /* ═══════════════════════════════════════════
    DESKTOP LAYOUT FIXES
    ═══════════════════════════════════════════ */
@@ -685,7 +687,7 @@ dialog#pp-gate::backdrop {
   <div>
     <div class="lbl">User Emotion Input</div>
     <div class="input-box">
-      <textarea id="txt" placeholder="Describe your current mood in Vietnamese...&#10;e.g. Hôm nay tôi rất vui!"></textarea>
+      <textarea id="txt" oninput="(function(){const s=document.getElementById('sticky-rec');if(s&&PARTICIPANT)s.style.display='';})()" placeholder="Describe your current mood in Vietnamese...&#10;e.g. Hôm nay tôi rất vui!"></textarea>
     </div>
     <div class="pills">
       <div class="pill" onclick="q('Hôm nay tôi rất vui và hứng khởi!')">😄 Happy</div>
@@ -754,8 +756,10 @@ dialog#pp-gate::backdrop {
     </div>
   </div>
 
-  <button class="btn" id="btn-run" onclick="run()" style="touch-action:manipulation">▶ Recommend</button>
-  <button class="btn-sm" onclick="resetProf()" style="touch-action:manipulation">↺ Reset User Profile</button>
+  <div class="desktop-only">
+    <button class="btn" id="btn-run" onclick="run()" style="touch-action:manipulation;width:100%">▶ Recommend</button>
+    <button class="btn-sm" onclick="resetProf()" style="touch-action:manipulation">↺ Reset User Profile</button>
+  </div>
 </div>
 
   <!-- Sheets sync state (hidden from UI) -->
@@ -1169,6 +1173,9 @@ async function run(){
   document.getElementById('empty-rec').style.display='none';
   const ro=document.getElementById('rec-out');
   ro.classList.remove('rec-out-hidden');
+  // Ẩn sticky bar khi đã có kết quả
+  const sr=document.getElementById('sticky-rec');
+  if(sr) sr.style.display='none';
   // Scroll đến emotion card — đầu kết quả
   setTimeout(()=>scrollToEl(document.getElementById('emo-card'), 60), 80);
   document.getElementById('go-survey-cta').style.display='block';
@@ -1568,7 +1575,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycby8VU47eqmIvcB-jlDgtErtHV2p9w1wMG-9n0QOIhdZGuPji4ZYfIK316z25hS17mc/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxiwgWru39mGZsK0OdZMIRT9w_W8WmlHwifuX5BnoBUak3gFeUBasqgOvMPARAUlRpC/exec';
 
 // ── Sync status dot ──
 function syncDot(state){
