@@ -89,7 +89,7 @@ option{background:#18181f}
 .btn-sm:hover{background:var(--surf2);color:var(--tx)}
 
 /* ─── Pages ─── */
-.page{display:none;flex-direction:column;gap:13px}
+.page{display:none;flex-direction:column;gap:13px;min-height:100px}
 .page.on{display:flex}
 
 /* ─── Empty state ─── */
@@ -307,6 +307,169 @@ option{background:#18181f}
 .sc-fw{height:5px;background:var(--surf2);border-radius:3px;overflow:hidden}
 .sc-ff{height:100%;border-radius:3px;background:var(--pu);transition:width .4s}
 .sc-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--tx2);text-align:right}
+
+/* ═══════════════════════════════════════════
+   DESKTOP LAYOUT FIXES
+   ═══════════════════════════════════════════ */
+
+/* Shell grid rows: topbar=52px, content=fill remaining */
+.shell{height:100vh;overflow:hidden}
+
+/* Panels must fill grid cell height */
+.left{height:100%;box-sizing:border-box}
+.mid{height:100%;overflow-y:auto;box-sizing:border-box}
+.right{height:100%;overflow-y:auto;box-sizing:border-box}
+
+/* Track card — desktop */
+.track{
+  background:var(--surf);
+  border:1px solid var(--bdr);
+  border-radius:var(--r2);
+  overflow:hidden;
+  transition:border-color .15s;
+}
+.track:hover{border-color:var(--pu)}
+
+.track-main{
+  display:flex;align-items:center;
+  gap:12px;padding:10px 14px;
+  cursor:pointer;
+}
+.track-rank{
+  font-size:11px;font-weight:700;color:var(--tx3);
+  width:18px;text-align:center;flex-shrink:0;
+}
+.track-name{
+  font-size:13px;font-weight:600;color:var(--tx);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:260px;
+}
+.track-artist{font-size:11px;color:var(--tx3);margin-top:2px}
+.track-score{
+  margin-left:auto;font-size:10px;font-family:'Courier New',monospace;
+  color:var(--tx3);flex-shrink:0;
+}
+.track-detail{
+  display:none;padding:0 14px 12px;
+  border-top:1px solid var(--bdr);
+}
+.track-detail.open{display:block}
+
+/* Explain bars */
+.explain-box{margin-bottom:10px}
+.explain-lbl{font-size:10px;font-weight:600;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.cb-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cb-name{font-size:10px;color:var(--tx2);width:130px;flex-shrink:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-wrap{flex:1;height:5px;background:var(--surf2);border-radius:3px;overflow:hidden}
+.cb-fill{height:100%;border-radius:3px;transition:width .3s}
+.cb-pct{font-size:10px;color:var(--tx3);width:30px;text-align:right;flex-shrink:0}
+
+/* Track list spacing */
+#trk-list{display:flex;flex-direction:column;gap:8px}
+
+/* rec-out full width when shown */
+#rec-out{width:100%}
+
+/* Empty state center */
+.empty{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;
+  min-height:200px;color:var(--tx3);gap:8px;
+}
+.empty .ico{font-size:36px}
+.empty p{font-size:13px;line-height:1.6;max-width:260px}
+
+/* Prob row (emotion confidence bars) */
+.prob-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.prob-lbl{font-size:10px;color:var(--tx2);width:72px;flex-shrink:0}
+.prob-bar{flex:1;height:4px;background:var(--surf2);border-radius:2px;overflow:hidden}
+.prob-fill{height:100%;border-radius:2px}
+.prob-pct{font-size:10px;color:var(--tx3);width:28px;text-align:right;flex-shrink:0}
+
+/* Fusion card */
+.fus-bar{
+  display:flex;height:8px;border-radius:4px;overflow:hidden;
+  margin:8px 0 4px;
+}
+.fus-seg{height:100%;transition:width .3s}
+.fus-legend{display:flex;gap:12px;flex-wrap:wrap}
+.fus-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--tx2)}
+.fus-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Context strip */
+.ctx-strip{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  padding:8px 12px;background:var(--surf2);
+  border-radius:var(--r);font-size:11px;color:var(--tx2);
+}
+.ctx-chip{display:flex;align-items:center;gap:4px}
+
+/* Profile mini bar (right panel) */
+.pb-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.pb-lbl{font-size:10px;color:var(--tx3);width:88px;flex-shrink:0}
+.pb-bar{flex:1;height:4px;background:var(--surf2);border-radius:2px;overflow:hidden}
+.pb-fill{height:100%;border-radius:2px;background:var(--pu);transition:width .4s}
+.pb-val{font-size:10px;color:var(--tx3);width:32px;text-align:right;flex-shrink:0}
+
+/* Stat boxes */
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.stat-box{
+  flex:1;min-width:70px;background:var(--surf);
+  border:1px solid var(--bdr);border-radius:var(--r2);
+  padding:10px 8px;text-align:center;
+}
+.stat-num{font-size:20px;font-weight:700;color:var(--tx)}
+.stat-lbl{font-size:10px;color:var(--tx3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+
+/* Behavior history table */
+.beh-table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surf2);padding:7px 10px;text-align:left;
+   font-size:10px;font-weight:600;color:var(--tx3);
+   text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--bdr);color:var(--tx2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surf2)}
+
+/* Hist items (right panel) */
+.hist-item{padding:8px 0;border-bottom:1px solid var(--bdr)}
+.hist-item:last-child{border-bottom:none}
+.hist-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.hist-song{font-size:12px;font-weight:500;color:var(--tx);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.hist-sig{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.hist-sub{font-size:10px;color:var(--tx3);margin-top:2px}
+.sig-like{background:var(--puglow);color:var(--pu2)}
+.sig-comp{background:#dcfce7;color:#166534}
+.sig-skip{background:#fee2e2;color:#991b1b}
+
+/* Likert scale */
+.lk-group{display:flex;gap:5px;margin:4px 0 12px}
+button.lk{
+  flex:1;padding:7px 4px;border-radius:6px;font-size:12px;font-weight:500;
+  border:1px solid var(--bdr2);background:transparent;color:var(--tx2);
+  cursor:pointer;transition:.15s;font-family:'Inter',sans-serif;
+}
+button.lk.sel,button.lk:hover{
+  background:var(--pu);color:#fff;border-color:var(--pu);
+}
+.sat-q-lbl{font-size:12px;font-weight:500;color:var(--tx);margin-bottom:2px}
+.sat-q-sub{font-size:10px;color:var(--tx3);margin-bottom:6px}
+
+/* Sat forms grid */
+#sat-baseline,#sat-full{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 24px;
+}
+
+/* Mono */
+.mono{font-family:'Courier New',monospace;font-size:11px}
+
+.rec-out-hidden{display:none!important}
+#rec-out{display:flex;flex-direction:column;gap:13px;width:100%}
 </style>
 </head>
 <body>
@@ -406,27 +569,11 @@ option{background:#18181f}
   <button class="btn-sm" onclick="resetProf()">↺ Reset User Profile</button>
 </div>
 
-  <!-- ── Google Sheets Config ── -->
-  <div style="display:flex;flex-direction:column;gap:7px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div class="lbl" style="margin:0">🔗 Google Sheets Sync</div>
-      <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#4a4a68;flex-shrink:0" title="Sync status"></div>
-    </div>
-    <input id="sheet-url-input"
-      type="text"
-      placeholder="Paste GAS Web App URL here..."
-      style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r);
-             color:var(--tx);font-family:'Inter',sans-serif;font-size:11px;padding:6px 9px;
-             outline:none;box-sizing:border-box"
-      oninput="syncDot('idle')"
-    >
-    <div style="display:flex;gap:6px">
-      <button class="btn-sm" style="flex:1" onclick="applySheetURL()">💾 Save & Test</button>
-      <button class="btn-sm" style="flex:1" onclick="testSheetsConnection()">🔄 Re-test</button>
-    </div>
-    <div id="sync-status" style="font-size:10px;color:var(--tx3);line-height:1.4">
-      Paste your Apps Script URL above, then click Save &amp; Test.
-    </div>
+  <!-- Sheets sync state (hidden from UI) -->
+  <div style="display:none" aria-hidden="true">
+    <div id="sync-dot"></div>
+    <div id="sync-status"></div>
+    <input id="sheet-url-input" type="text">
   </div>
 
 <!-- MID -->
@@ -438,7 +585,7 @@ option{background:#18181f}
       <div class="ico">🎵</div>
       <p>Enter your mood and click <strong>Recommend</strong><br>to get started</p>
     </div>
-    <div id="rec-out" style="display:none;flex-direction:column;gap:13px">
+    <div id="rec-out" class="rec-out-hidden" style="flex-direction:column;gap:13px">
       <div id="emo-card"></div>
       <div id="ctx-card"></div>
       <div id="fus-card"></div>
@@ -828,7 +975,7 @@ async function run(){
   // Show loading
   document.getElementById('empty-rec').style.display='none';
   const ro=document.getElementById('rec-out');
-  ro.style.display='flex';ro.style.flexDirection='column';ro.style.gap='13px';
+  ro.classList.remove('rec-out-hidden');
   document.getElementById('go-survey-cta').style.display='block';
   document.getElementById('emo-card').innerHTML=`
     <div class="card" style="display:flex;align-items:center;gap:12px;padding:16px">
@@ -981,10 +1128,8 @@ function renderTracks(recs,emo,w,t,a,cfg){
 
 function togTrack(id){
   const d=document.getElementById('td'+id);
-  const tr=document.getElementById('tr'+id);
-  const open=d.style.display==='block';
-  d.style.display=open?'none':'block';
-  tr.classList.toggle('open',!open);
+  if(!d) return;
+  d.classList.toggle('open');
 }
 
 // ── record behavior signal ──
@@ -1207,7 +1352,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzXidiBzRzIlC8_dhbsokiaxobK1gdCiuHO36CIrLnhQSB-TtE9O1JTfdZhu9TdjP5N/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwqR7Szcv6D792CmblpIGw0-mSqyO2ZCDRNrzZ1thi2xpazjeE5Na8jFPRhZAmlCtgJ/exec';
 
 // ── Sync status dot ──
 function syncDot(state){
