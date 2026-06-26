@@ -406,6 +406,29 @@ option{background:#18181f}
   <button class="btn-sm" onclick="resetProf()">↺ Reset User Profile</button>
 </div>
 
+  <!-- ── Google Sheets Config ── -->
+  <div style="display:flex;flex-direction:column;gap:7px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="lbl" style="margin:0">🔗 Google Sheets Sync</div>
+      <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#4a4a68;flex-shrink:0" title="Sync status"></div>
+    </div>
+    <input id="sheet-url-input"
+      type="text"
+      placeholder="Paste GAS Web App URL here..."
+      style="width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r);
+             color:var(--tx);font-family:'Inter',sans-serif;font-size:11px;padding:6px 9px;
+             outline:none;box-sizing:border-box"
+      oninput="syncDot('idle')"
+    >
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm" style="flex:1" onclick="applySheetURL()">💾 Save & Test</button>
+      <button class="btn-sm" style="flex:1" onclick="testSheetsConnection()">🔄 Re-test</button>
+    </div>
+    <div id="sync-status" style="font-size:10px;color:var(--tx3);line-height:1.4">
+      Paste your Apps Script URL above, then click Save &amp; Test.
+    </div>
+  </div>
+
 <!-- MID -->
 <div class="mid" id="mid">
 
@@ -1184,31 +1207,119 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbym-QY9xtwc6-4aG6peEQgtgJj7pr64t-A3CCmp7I4jSlnF7hK2o8ekbA1q0Ltd6wffkA/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzXidiBzRzIlC8_dhbsokiaxobK1gdCiuHO36CIrLnhQSB-TtE9O1JTfdZhu9TdjP5N/exec';
+
+// ── Sync status dot ──
+function syncDot(state){
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-status');
+  if(!dot) return;
+  const map = {
+    idle:    {bg:'#4a4a68', msg:''},
+    sending: {bg:'#f59e0b', msg:'⏳ Sending to Google Sheets...'},
+    ok:      {bg:'#22c55e', msg:'✅ Last sync OK'},
+    error:   {bg:'#f87171', msg:'❌ Sync failed — check URL & GAS deployment'},
+  };
+  const s = map[state] || map.idle;
+  dot.style.background = s.bg;
+  if(txt && s.msg) txt.textContent = s.msg;
+}
 
 async function syncToServer(endpoint, data){
-  if(!SHEETS_URL) return;
+  if(!SHEETS_URL){
+    console.warn('[EMCON] SHEETS_URL chưa được cấu hình');
+    return;
+  }
   const payload = { sheet: endpoint.replace('/log/',''), ...data };
+  syncDot('sending');
   try{
-    // text/plain tránh CORS preflight bị block khi chạy local
+    // no-cors bắt buộc vì GAS không trả CORS headers
+    // → Không đọc được response, nhưng nếu không throw = request đã gửi đi
     await fetch(SHEETS_URL, {
-      method:'POST',
-      mode:'no-cors',
+      method: 'POST',
+      mode:   'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(payload)
+      body:   JSON.stringify(payload)
     });
-  }catch(e){ console.warn('Sheets sync failed:', e.message); }
+    syncDot('ok');
+    console.log('[EMCON] Synced:', payload.sheet);
+  }catch(e){
+    syncDot('error');
+    console.warn('[EMCON] Sheets sync failed:', e.message);
+  }
+}
+
+// ── Debug: test connection + xem Sheets có nhận không ──
+async function testSheetsConnection(){
+  const statusEl = document.getElementById('sync-status');
+  if(!SHEETS_URL){
+    syncDot('error');
+    if(statusEl) statusEl.textContent = '❌ No URL set. Paste your GAS URL above.';
+    toast('⚠️ SHEETS_URL chưa set'); return;
+  }
+  syncDot('sending');
+  if(statusEl) statusEl.textContent = '⏳ Testing connection...';
+  try{
+    // GET /exec?action=ping — GAS trả JSON, nhưng CORS block đọc response
+    // Dùng no-cors: nếu không throw = server reachable
+    await fetch(SHEETS_URL + '?action=ping', { mode:'no-cors' });
+
+    // Ghi 1 dòng test thật vào sheet để verify end-to-end
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        sheet: 'behavior',
+        timestamp: new Date().toISOString(),
+        participant_id: PARTICIPANT?.id || 'CONNECTION_TEST',
+        session_id: PARTICIPANT?.session || 'TEST',
+        phase: 'connection_test',
+        model_mode: 'full',
+        predicted_emotion: 'Neutral', emotion_confidence: '1.0000',
+        weather:'Sunny', time_context:'Morning', activity:'Testing',
+        track_id:0, track_name:'[Test Row - can delete]', artist:'EMCON-Test',
+        track_mood:'test',
+        track_vector_valence:'0.500', track_vector_energy:'0.500',
+        track_vector_tempo:'0.500', track_vector_danceability:'0.500',
+        track_vector_acousticness:'0.400',
+        recommendation_score:'0.9999', signal:'like', action:'like',
+        user_profile_before:'0.500|0.500|0.500|0.500|0.400',
+        user_profile_after:'0.500|0.500|0.500|0.500|0.400',
+      })
+    });
+    syncDot('ok');
+    if(statusEl) statusEl.textContent = '✅ Connected! Check Google Sheets in ~5 seconds for a test row.';
+    toast('✅ Test row sent → check Sheets in ~5s');
+  }catch(e){
+    syncDot('error');
+    if(statusEl) statusEl.textContent = '❌ Failed: ' + e.message + '. Check URL & GAS deployment.';
+    toast('❌ Connection failed: ' + e.message);
+    console.error('[EMCON] testSheetsConnection error:', e);
+  }
 }
 
 // Set URL từ console: setServerURL('https://script.google.com/...')
 window.setServerURL = (url)=>{
   SHEETS_URL = url.trim();
-  toast(`🔗 Connected to Google Sheets`);
-  // Test ping
-  fetch(SHEETS_URL+'?action=ping', {mode:'no-cors'})
-    .then(()=>toast('✅ Google Sheets sync active'))
-    .catch(()=>toast('⚠️ Check your Apps Script URL'));
+  toast(`🔗 Google Sheets URL set — bấm "Test Connection" để kiểm tra`);
 };
+
+// Gọi từ input box trong Admin panel
+function applySheetURL(){
+  const el = document.getElementById('sheet-url-input');
+  if(!el || !el.value.trim()){
+    const statusEl = document.getElementById('sync-status');
+    if(statusEl) statusEl.textContent = '❌ Please paste your GAS Web App URL first.';
+    syncDot('error');
+    toast('⚠️ Paste GAS URL trước');
+    return;
+  }
+  SHEETS_URL = el.value.trim();
+  const statusEl = document.getElementById('sync-status');
+  if(statusEl) statusEl.textContent = '⏳ URL saved, testing...';
+  testSheetsConnection();
+}
 let PARTICIPANT=null;  // {id, age, gender, freq, genres, session, consent}
 
 function startStudy(){
@@ -1468,6 +1579,17 @@ function dl(name,content,type){
 renderProfile();
 buildSatForms();
 autoCtx();
+// Pre-fill sheets URL input if already configured
+(function(){
+  const inp = document.getElementById('sheet-url-input');
+  if(inp && SHEETS_URL && !SHEETS_URL.includes('script.google.com')==false){
+    inp.value = SHEETS_URL;
+    // Auto-test nếu URL đã có sẵn (không phải placeholder)
+    if(SHEETS_URL && SHEETS_URL.startsWith('https://script.google.com')){
+      setTimeout(testSheetsConnection, 1500);
+    }
+  }
+})();
 // Disable recommend button until participant starts study
 (function(){
   const btn = document.getElementById('btn-run');
