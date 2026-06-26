@@ -199,79 +199,92 @@ option{background:#18181f}
 
 /* ─── Mobile responsive ─── */
 @media(max-width:768px){
-  body{overflow:auto;height:auto}
 
-  /* Stack layout vertically on mobile */
-  .shell{
-    display:flex;flex-direction:column;
-    height:100vh;
-    overflow:hidden;
+  /* ── Layout: body scroll tự nhiên ── */
+  html, body {
+    height: auto !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  .shell {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+  }
+  /* Override desktop panel heights */
+  .left, .mid, .right {
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* Topbar: logo left, tabs scroll right */
-  .topbar{
-    position:sticky;top:0;z-index:200;
-    padding:0 12px;gap:8px;flex-wrap:nowrap;
-    height:auto;min-height:48px;
+  /* ── Topbar ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    padding: 0 12px;
+    gap: 6px;
+    min-height: 48px;
+    height: auto;
   }
-  .logo{font-size:13px}
-  .tabs{gap:1px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 0}
-  .tab{padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0}
+  .logo { font-size: 13px; }
+  .tabs { gap: 2px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 4px 0; }
+  .tab  { padding: 5px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
 
-  /* Hide right panel on mobile (profile/history → shown inside mid) */
-  .right{display:none}
-
-  /* Left panel becomes a collapsible top section */
-  .left{
-    border-right:none;border-bottom:none;
-    padding:12px 12px 20px;gap:10px;
-    /* scroll được trong left panel */
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  /* Mid panel takes full width */
-  .mid{padding:12px;width:100%;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-
-  /* 2-col grid inside left panel → single col */
-  .left .ctrl-grid,
-  .left [style*="grid-template-columns"]{
-    grid-template-columns:1fr !important;
+  /* ── Left panel ── */
+  .left {
+    border-right: none;
+    border-bottom: 1px solid var(--bdr);
+    padding: 14px 12px 16px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  /* Cards full width */
-  .card{padding:12px}
+  /* ── Mid panel ── */
+  .mid {
+    padding: 12px;
+    padding-bottom: 90px; /* space cho sticky bar */
+    width: 100%;
+    min-height: 50vh;
+    box-sizing: border-box;
+  }
 
-  /* Tracks: hide score, show bigger buttons */
-  .track-score{display:none}
-  .track-btns{display:flex;gap:6px;flex-wrap:wrap}
-  .act{flex:1;min-width:80px;padding:8px 6px;font-size:12px}
+  /* ── Right panel ẩn ── */
+  .right { display: none !important; }
 
-  /* Emotion card */
-  .emo-header{flex-wrap:wrap;gap:8px}
+  /* ── Controls ── */
+  .left [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  .card { padding: 12px; }
 
-  /* Sat form: 1 col */
-  #sat-baseline,#sat-full{grid-template-columns:1fr !important}
+  /* ── Track buttons ── */
+  .track-score { display: none; }
+  .track-btns  { display: flex; gap: 6px; flex-wrap: wrap; }
+  .act { flex: 1; min-width: 80px; padding: 8px 6px; font-size: 12px; }
 
-  /* modal handled by dialog element */
+  /* ── Cards & layout ── */
+  .emo-header    { flex-wrap: wrap; gap: 8px; }
+  #sat-baseline, #sat-full { grid-template-columns: 1fr !important; }
+  .stats-row     { flex-wrap: wrap; gap: 8px; }
+  .stat-box      { min-width: 70px; flex: 1; }
+  .fusion-row    { flex-wrap: wrap; }
+  .fusion-seg    { min-width: 80px; }
+  .cb-row        { gap: 6px; }
+  .ctx-strip     { flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
 
-  /* Behavior stats */
-  .stats-row{flex-wrap:wrap;gap:8px}
-  .stat-box{min-width:70px;flex:1}
+  /* ── Behavior table ── */
+  .beh-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 500px; font-size: 11px; }
 
-  /* Fusion row wraps */
-  .fusion-row{flex-wrap:wrap}
-  .fusion-seg{min-width:80px}
+  /* ── Intro card: 3 pillars → 1 col ── */
+  .intro-pillars { grid-template-columns: 1fr !important; }
 
-  /* Explain bars */
-  .cb-row{gap:6px}
+  /* ── Track name truncate wider on mobile ── */
+  .track-name { max-width: none !important; }
 
-  /* Context strip */
-  .ctx-strip{flex-wrap:wrap;gap:6px;padding:8px 10px}
-
-  /* Behavior table: horizontal scroll */
-  .beh-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:500px;font-size:11px}
 }
 
 @media(max-width:480px){
@@ -307,6 +320,7 @@ option{background:#18181f}
 .sc-ff{height:100%;border-radius:3px;background:var(--pu);transition:width .4s}
 .sc-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--tx2);text-align:right}
 
+@media (min-width: 769px) {
 /* ═══════════════════════════════════════════
    DESKTOP LAYOUT FIXES
    ═══════════════════════════════════════════ */
@@ -472,6 +486,9 @@ button.lk.sel,button.lk:hover{
 .rec-out-hidden{display:none!important}
 #rec-out{display:flex;flex-direction:column;gap:13px;width:100%}
 
+
+}
+
 /* ── Touch / Tap fixes (mobile) ──────────────────────────────── */
 /* Loại bỏ 300ms tap delay trên toàn bộ button, pill, tab */
 button,
@@ -515,16 +532,26 @@ dialog#pp-gate {
   border: none;
   padding: 0;
   background: transparent;
-  max-width: min(460px, calc(100vw - 32px));
-  width: 100%;
+  max-width: 480px;
+  width: calc(100vw - 32px);
   border-radius: 16px;
   outline: none;
-  overflow: visible;
-  /* Native dialog tự center và tự xử lý z-index — KHÔNG dùng position:fixed hay transform */
+  overflow-y: auto;
+  max-height: 90vh;
+  /* Căn giữa — hoạt động trên mọi browser */
+  margin: auto;
+  -webkit-overflow-scrolling: touch;
 }
 dialog#pp-gate::backdrop {
-  background: rgba(8, 8, 14, 0.9);
-  backdrop-filter: none;
+  background: rgba(8, 8, 14, 0.92);
+}
+/* Mobile: full width gần hết màn hình */
+@media (max-width: 768px) {
+  dialog#pp-gate {
+    width: calc(100vw - 24px);
+    max-height: 85vh;
+    margin: auto;
+  }
 }
 
 
@@ -707,7 +734,7 @@ dialog#pp-gate::backdrop {
           and adaptive learning from your listening behaviour.
         </p>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+        <div class="intro-pillars" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
           <div style="background:var(--surf2);border-radius:10px;padding:12px 8px">
             <div style="font-size:18px;margin-bottom:6px">🧠</div>
             <div style="font-size:11px;font-weight:600;color:var(--tx);margin-bottom:3px">Emotion</div>
@@ -1509,7 +1536,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwS30_1LEjjf60rhdXSrhdgUE1XVFk9HPsJfCF-CG6_3hIdQer7acNdCRPP6rF27hxF/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwQ1jYPgmqlvRlr6XZHdc2NCNXEdpGP0kG4kpiKfGhr7XHZB15FXyfuXZhHXbNtPK8T/exec';
 
 // ── Sync status dot ──
 function syncDot(state){
@@ -1909,8 +1936,7 @@ window.addEventListener('DOMContentLoaded', function(){
   border-radius:16px; overflow:visible;
 ">
   <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;
-              padding:24px;width:100%;box-sizing:border-box;max-height:90vh;overflow-y:auto;
-              -webkit-overflow-scrolling:touch;">
+              padding:24px;width:100%;box-sizing:border-box;">
     <!-- Project intro compact -->
     <div style="text-align:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--bdr)">
       <div style="font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px">🎵 EMCON-Music</div>
