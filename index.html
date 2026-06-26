@@ -60,7 +60,7 @@ textarea::placeholder{color:var(--tx3)}
 /* ─── Pills ─── */
 .pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
 .pill{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;
-      border:1px solid var(--bdr2);background:var(--surf2);color:var(--tx2);transition:.15s}
+      border:1px solid var(--bdr2);background:var(--surf2);color:var(--tx2);transition:.15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .pill:hover{border-color:var(--pu);color:var(--pu2);background:var(--puglow)}
 
 /* ─── Selects ─── */
@@ -327,6 +327,8 @@ option{background:#18181f}
   border-radius:var(--r2);
   overflow:hidden;
   transition:border-color .15s;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 .track:hover{border-color:var(--pu)}
 
@@ -470,6 +472,76 @@ button.lk.sel,button.lk:hover{
 
 .rec-out-hidden{display:none!important}
 #rec-out{display:flex;flex-direction:column;gap:13px;width:100%}
+
+/* ── Touch / Tap fixes (mobile) ──────────────────────────────── */
+/* Loại bỏ 300ms tap delay trên toàn bộ button, pill, tab */
+button,
+.btn,
+.btn-sm,
+.tab,
+.pill,
+.act,
+button.lk,
+.track,
+[onclick] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* disabled state cho btn-run rõ ràng */
+.btn:disabled,
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Active/press feedback trên mobile */
+.btn:active:not(:disabled)     { transform: scale(0.97); }
+.btn-sm:active                  { transform: scale(0.97); }
+.tab:active                     { opacity: 0.75; }
+.act:active                     { transform: scale(0.95); }
+.pill:active                    { transform: scale(0.95); }
+button.lk:active                { transform: scale(0.95); }
+
+/* pp-gate: tắt backdrop-filter trên mobile (gây lag) */
+@media (max-width: 768px) {
+  #pp-gate {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(8,8,14,0.95) !important;
+  }
+}
+
+
+/* ── Mobile sticky Recommend bar ─────────────────────────────── */
+#mobile-rec-bar { display: none; }
+@media (max-width: 768px) {
+  #mobile-rec-bar {
+    display: block;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--surf);
+    border-top: 1px solid var(--bdr);
+    z-index: 500;
+    box-shadow: 0 -4px 12px rgba(0,0,0,.15);
+  }
+  #mobile-rec-bar button {
+    width: 100%; padding: 13px;
+    background: var(--pu); color: #fff;
+    border: none; border-radius: var(--r);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #mobile-rec-bar button:active:not(:disabled) { transform: scale(0.98); }
+  #mobile-rec-bar button:disabled { opacity: 0.4; pointer-events: none; }
+  .left { padding-bottom: 76px; }
+}
+
 </style>
 </head>
 <body>
@@ -485,9 +557,9 @@ button.lk.sel,button.lk:hover{
       <span id="pp-status-txt"></span>
     </div>
     <div class="tabs">
-      <button class="tab on" onclick="goTab('rec')">🎧 Recommend</button>
-      <button class="tab"    onclick="goTab('beh')">📊 Behavior</button>
-      <button class="tab"    onclick="goTab('sat')">📝 User Study</button>
+      <button class="tab on" onclick="goTab('rec')" style="touch-action:manipulation">🎧 Recommend</button>
+      <button class="tab"    onclick="goTab('beh')" style="touch-action:manipulation">📊 Behavior</button>
+      <button class="tab"    onclick="goTab('sat')" style="touch-action:manipulation">📝 User Study</button>
     </div>
   </div>
 </div>
@@ -511,7 +583,7 @@ button.lk.sel,button.lk:hover{
   <div style="display:flex;flex-direction:column;gap:8px">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div class="lbl" style="margin:0">Context</div>
-      <button onclick="autoCtx()" style="font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--pu);background:var(--puglow);color:var(--pu2);cursor:pointer;font-family:Inter,sans-serif">⚡ Auto HCM Time</button>
+      <button onclick="autoCtx()" style="font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--pu);background:var(--puglow);color:var(--pu2);cursor:pointer;font-family:Inter,sans-serif;touch-action:manipulation">⚡ Auto HCM Time</button>
     </div>
     <div class="ctrl">
       <label>🌤 Weather</label>
@@ -565,8 +637,8 @@ button.lk.sel,button.lk:hover{
     </div>
   </div>
 
-  <button class="btn" id="btn-run" onclick="run()">▶ Recommend</button>
-  <button class="btn-sm" onclick="resetProf()">↺ Reset User Profile</button>
+  <button class="btn" id="btn-run" onclick="run()" style="touch-action:manipulation">▶ Recommend</button>
+  <button class="btn-sm" onclick="resetProf()" style="touch-action:manipulation">↺ Reset User Profile</button>
 </div>
 
   <!-- Sheets sync state (hidden from UI) -->
@@ -643,7 +715,7 @@ button.lk.sel,button.lk:hover{
 
     <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
       <div style="font-size:12px;color:var(--tx2)">Export User Behavior Data</div>
-      <button class="btn" style="width:auto;padding:7px 16px;font-size:12px" onclick="exportCSV()">
+      <button class="btn" style="width:auto;padding:7px 16px;font-size:12px" onclick="exportCSV()" style="touch-action:manipulation">
         ⬇ Download behavior_log.csv
       </button>
     </div>
@@ -684,7 +756,7 @@ button.lk.sel,button.lk:hover{
     </div>
 
     <!-- Submit button -->
-    <button class="btn" style="padding:12px;font-size:14px;letter-spacing:.02em" onclick="submitSat()">✓ Submit Rating</button>
+    <button class="btn" style="padding:12px;font-size:14px;letter-spacing:.02em" onclick="submitSat()" style="touch-action:manipulation">✓ Submit Rating</button>
 
     <!-- Aggregated Results (researcher view) -->
     <div class="card" id="sat-results">
@@ -695,8 +767,8 @@ button.lk.sel,button.lk:hover{
           <span style="font-size:11px;color:var(--tx2)">participants</span>
         </div>
         <div style="display:flex;gap:6px">
-          <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportSatCSV()">⬇ CSV</button>
-          <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportJSON()">⬇ JSON</button>
+          <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportSatCSV()" style="touch-action:manipulation">⬇ CSV</button>
+          <button class="btn-sm" style="width:auto;padding:5px 10px;font-size:11px" onclick="exportJSON()" style="touch-action:manipulation">⬇ JSON</button>
         </div>
       </div>
       <div id="sat-compare"></div>
@@ -720,6 +792,14 @@ button.lk.sel,button.lk:hover{
 </div>
 
 </div><!-- /shell -->
+
+<!-- Mobile sticky Recommend bar (only visible on mobile) -->
+<div id="mobile-rec-bar">
+  <button id="btn-run-mobile" onclick="run()" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent">
+    🔒 Start Study First
+  </button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1117,9 +1197,9 @@ function renderTracks(recs,emo,w,t,a,cfg){
             </div>
           </div>
           <div class="track-btns">
-            <button class="act like" id="btn-like-${s.id}" onclick="event.stopPropagation();sig(${s.id},'like')">👍 Like</button>
-            <button class="act comp" id="btn-complete-${s.id}" onclick="event.stopPropagation();sig(${s.id},'complete')">✅ Complete</button>
-            <button class="act skip" id="btn-skip-${s.id}" onclick="event.stopPropagation();sig(${s.id},'skip')">⏭ Skip</button>
+            <button class="act like" id="btn-like-${s.id}" onclick="event.stopPropagation();sig(${s.id},'like')" style="touch-action:manipulation">👍 Like</button>
+            <button class="act comp" id="btn-complete-${s.id}" onclick="event.stopPropagation();sig(${s.id},'complete')" style="touch-action:manipulation">✅ Complete</button>
+            <button class="act skip" id="btn-skip-${s.id}" onclick="event.stopPropagation();sig(${s.id},'skip')" style="touch-action:manipulation">⏭ Skip</button>
           </div>
         </div>
       </div>`;
@@ -1352,7 +1432,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwqR7Szcv6D792CmblpIGw0-mSqyO2ZCDRNrzZ1thi2xpazjeE5Na8jFPRhZAmlCtgJ/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz2OoSwwPrnKxRtha11ROtOqKUU3nEn9oOUY6wdvZiVGttozahXuyv3wJM-CwDUT7U/exec;
 
 // ── Sync status dot ──
 function syncDot(state){
@@ -1504,6 +1584,8 @@ function startStudy(){
   document.getElementById('btn-run').disabled = false;
   document.getElementById('btn-run').style.opacity = '';
   document.getElementById('btn-run').title = '';
+  const mobileBtn = document.getElementById('btn-run-mobile');
+  if(mobileBtn){ mobileBtn.disabled = false; mobileBtn.textContent = '▶ Recommend'; }
   toast(`✅ Welcome ${id}! Study has started`);
 }
 
@@ -1529,7 +1611,7 @@ function buildSatForms(){
         <div class="sat-desc">${c.desc}</div>
         <div class="lk-row">
           ${[1,2,3,4,5].map(v=>`<button class="lk" id="lk-${prefix}-${c.key}-${v}"
-            onclick="pickLk('${prefix}','${c.key}',${v})">${v}</button>`).join('')}
+            onclick="pickLk('${prefix}','${c.key}',${v})" style="touch-action:manipulation">${v}</button>`).join('')}
         </div>
         <div class="lk-hint"><span>Strongly Disagree</span><span>Strongly Agree</span></div>
       </div>`).join('');
@@ -1743,6 +1825,8 @@ autoCtx();
     btn.style.opacity = '0.45';
     btn.title = 'Please start the study first (click Start Study)';
   }
+  const mobileBtn2 = document.getElementById('btn-run-mobile');
+  if(mobileBtn2){ mobileBtn2.disabled = true; mobileBtn2.textContent = '🔒 Start Study First'; }
 })();
 </script>
 
@@ -1788,7 +1872,7 @@ autoCtx();
       </label>
     </div>
 
-    <button onclick="startStudy()" style="width:100%;margin-top:20px;padding:14px;border:none;border-radius:10px;background:var(--pu);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;touch-action:manipulation">Start Study →</button>
+    <button onclick="startStudy()" ontouchstart="" style="width:100%;margin-top:20px;padding:14px;border:none;border-radius:10px;background:var(--pu);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;touch-action:manipulation">Start Study →</button>
     <div style="font-size:10px;color:var(--tx3);text-align:center;margin-top:10px">🔒 Your data is anonymized and used for research only.</div>
   </div>
 </div>
