@@ -309,6 +309,8 @@ option{background:#18181f}
   /* ── Track name truncate wider on mobile ── */
   .track-name { max-width: none !important; }
 
+
+
 }
 
 @media(max-width:480px){
@@ -651,6 +653,35 @@ dialog#pp-gate::backdrop {
 </div>
 
 <div class="left">
+  <!-- ── Project intro banner ── -->
+  <div style="background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--bdr)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-size:18px">🎵</span>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--tx)">EMCON-Music</div>
+        <div style="font-size:9px;color:var(--pu);font-weight:600;letter-spacing:.05em;text-transform:uppercase">Emotion · Context · Behaviour</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="background:var(--pu);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+        <span style="font-size:11px;color:var(--tx2)">Type your mood in Vietnamese below</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="background:var(--pu);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
+        <span style="font-size:11px;color:var(--tx2)">Set context &amp; model config</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="background:var(--pu);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span>
+        <span style="font-size:11px;color:var(--tx2)">Tap <strong style="color:var(--tx)">▶ Recommend</strong></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="background:var(--pu);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span>
+        <span style="font-size:11px;color:var(--tx2)">👍 Like · ✅ Complete · ⏭ Skip</span>
+      </div>
+    </div>
+  </div>
+
   <div>
     <div class="lbl">User Emotion Input</div>
     <div class="input-box">
@@ -739,55 +770,11 @@ dialog#pp-gate::backdrop {
 
   <!-- REC PAGE -->
   <div class="page on" id="pg-rec">
-    <div class="empty" id="empty-rec" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;padding:24px 16px;max-width:600px;margin:0 auto">
-
-      <!-- Getting started card -->
-      <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:16px;
-                  padding:28px;width:100%;box-sizing:border-box;margin-bottom:16px">
-        <div style="font-size:28px;margin-bottom:12px">🎵</div>
-        <div style="font-size:16px;font-weight:700;color:var(--tx);margin-bottom:6px">EMCON-Music</div>
-        <div style="font-size:11px;font-weight:600;color:var(--pu);letter-spacing:.07em;
-                    text-transform:uppercase;margin-bottom:14px">
-          Context-aware Emotion–Behavior Adaptive Music Recommendation
-        </div>
-        <p style="font-size:13px;color:var(--tx2);line-height:1.7;margin:0 0 18px">
-          This system recommends music based on <strong style="color:var(--tx)">how you feel right now</strong> —
-          combining Vietnamese emotion recognition (PhoBERT), real-time context (time &amp; weather),
-          and adaptive learning from your listening behaviour.
-        </p>
-
-        <div class="intro-pillars" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
-          <div style="background:var(--surf2);border-radius:10px;padding:12px 8px">
-            <div style="font-size:18px;margin-bottom:6px">🧠</div>
-            <div style="font-size:11px;font-weight:600;color:var(--tx);margin-bottom:3px">Emotion</div>
-            <div style="font-size:10px;color:var(--tx3);line-height:1.5">PhoBERT NLP on Vietnamese text</div>
-          </div>
-          <div style="background:var(--surf2);border-radius:10px;padding:12px 8px">
-            <div style="font-size:18px;margin-bottom:6px">🌤</div>
-            <div style="font-size:11px;font-weight:600;color:var(--tx);margin-bottom:3px">Context</div>
-            <div style="font-size:10px;color:var(--tx3);line-height:1.5">Time of day &amp; weather</div>
-          </div>
-          <div style="background:var(--surf2);border-radius:10px;padding:12px 8px">
-            <div style="font-size:18px;margin-bottom:6px">🔄</div>
-            <div style="font-size:11px;font-weight:600;color:var(--tx);margin-bottom:3px">Behaviour</div>
-            <div style="font-size:10px;color:var(--tx3);line-height:1.5">Adapts via Like / Skip / Complete</div>
-          </div>
-        </div>
-
-        <div style="background:var(--bg);border-radius:10px;padding:12px 14px;text-align:left">
-          <div style="font-size:10px;font-weight:700;color:var(--tx);margin-bottom:8px;
-                      letter-spacing:.06em;text-transform:uppercase">How to use</div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <div style="display:flex;gap:8px"><span style="font-size:12px;flex-shrink:0">1️⃣</span>
-              <span style="font-size:11px;color:var(--tx2);line-height:1.5">Type your mood in Vietnamese or tap a pill shortcut</span></div>
-            <div style="display:flex;gap:8px"><span style="font-size:12px;flex-shrink:0">2️⃣</span>
-              <span style="font-size:11px;color:var(--tx2);line-height:1.5">Set weather, time &amp; activity context</span></div>
-            <div style="display:flex;gap:8px"><span style="font-size:12px;flex-shrink:0">3️⃣</span>
-              <span style="font-size:11px;color:var(--tx2);line-height:1.5">Click <strong style="color:var(--tx)">▶ Recommend</strong> to get personalised songs</span></div>
-            <div style="display:flex;gap:8px"><span style="font-size:12px;flex-shrink:0">4️⃣</span>
-              <span style="font-size:11px;color:var(--tx2);line-height:1.5">React with 👍 Like, ✅ Complete, ⏭ Skip — profile updates instantly</span></div>
-          </div>
-        </div>
+    <div class="empty" id="empty-rec">
+      <div style="color:var(--tx3);font-size:13px;padding:40px 20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:10px">🎵</div>
+        <div style="font-weight:600;color:var(--tx2);margin-bottom:4px">Enter your mood and tap Recommend</div>
+        <div style="font-size:12px">Type in Vietnamese or pick a mood pill on the left</div>
       </div>
     </div>
     <div id="rec-out" class="rec-out-hidden" style="flex-direction:column;gap:13px">
@@ -1182,8 +1169,8 @@ async function run(){
   document.getElementById('empty-rec').style.display='none';
   const ro=document.getElementById('rec-out');
   ro.classList.remove('rec-out-hidden');
-  // Cuộn lên đầu để user thấy kết quả
-  window.scrollTo({top:0, behavior:'smooth'});
+  // Scroll đến emotion card — đầu kết quả
+  setTimeout(()=>scrollToEl(document.getElementById('emo-card'), 60), 80);
   document.getElementById('go-survey-cta').style.display='block';
   document.getElementById('emo-card').innerHTML=`
     <div class="card" style="display:flex;align-items:center;gap:12px;padding:16px">
@@ -1527,9 +1514,10 @@ function goTab(tab){
   const tabs=['rec','beh','sat'];
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',tabs[i]===tab));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.getElementById('pg-'+tab).classList.add('on');
-  // Cuộn lên đầu trang khi chuyển tab (quan trọng trên mobile)
-  window.scrollTo({top:0, behavior:'smooth'});
+  const page = document.getElementById('pg-'+tab);
+  page.classList.add('on');
+  // Scroll đến đầu page section (bên dưới topbar)
+  setTimeout(()=>scrollToEl(page, 52), 50);
   if(tab==='beh')updateBehPage();
   if(tab==='sat')renderSatResults();
 }
@@ -1538,6 +1526,24 @@ function toast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2600);
 }
+// ── Scroll helper — works on both mobile (body scroll) and desktop (panel scroll) ──
+function scrollToEl(el, offset){
+  if(!el) return;
+  const pad = offset || 56;
+  // Desktop: mid panel có overflow-y:auto riêng
+  const mid = document.getElementById('mid');
+  if(mid && getComputedStyle(mid).overflowY !== 'visible'){
+    // scroll trong mid panel
+    const midTop  = mid.getBoundingClientRect().top;
+    const elTop   = el.getBoundingClientRect().top;
+    mid.scrollTo({top: mid.scrollTop + (elTop - midTop) - pad, behavior:'smooth'});
+  } else {
+    // Mobile: body scroll
+    const top = el.getBoundingClientRect().top + window.pageYOffset - pad;
+    window.scrollTo({top: Math.max(0,top), behavior:'smooth'});
+  }
+}
+
 
 // ── Auto context: thời gian thực HCM (UTC+7) — thời tiết chọn nhanh ──
 function autoCtx(){
@@ -1562,7 +1568,7 @@ function autoCtx(){
 // ── GOOGLE SHEETS SYNC ──
 // Điền URL Google Apps Script Web App của bạn vào đây
 // Hướng dẫn tạo: xem notebook EMCON_Deploy.ipynb
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyM9uFu_GmkyP9-fUA6oR_YNCxeKA3g24vlmw2YqHoVnxhCPJx4n1n1Ma_5zGFsmlkF/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxVXf8ZGK6_kJjjc7AlAEGL_Z_Bir2s7dFRdaA0C2leh8kzyCNOVW0cb_-k7CEfS5AS/exec;
 
 // ── Sync status dot ──
 function syncDot(state){
@@ -1718,6 +1724,11 @@ function startStudy(){
   const stickyBtn = document.getElementById('btn-sticky');
   if(stickyBtn){ stickyBtn.disabled = false; stickyBtn.textContent = '▶ Recommend'; }
   toast(`✅ Welcome ${id}! Study has started`);
+  // Scroll đến đầu left panel — phần banner hướng dẫn
+  setTimeout(()=>{
+    const banner = document.querySelector('.left');
+    if(banner) scrollToEl(banner, 52);
+  }, 200);
 }
 
 // ── User Satisfaction ──
